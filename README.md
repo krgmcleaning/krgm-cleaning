@@ -21,7 +21,7 @@ Az `app.js` tetején a `PRICING` részben átírod a számot, commitolod, és a 
 - Emailben is, ha be van állítva a `RESEND_API_KEY` és a `NOTIFY_EMAIL`
 
 ## Környezeti változók (Vercel → Settings → Environment Variables)
-- `SUPABASE_URL`, `SUPABASE_ANON_KEY` – már be vannak állítva
-- `RESEND_API_KEY` – a resend.com-ról (ingyenes csomag)
-- `NOTIFY_EMAIL` – erre a címre jönnek az értesítők
+- `SUPABASE_URL`, `SUPABASE_ANON_KEY` – beállítva
+- `RESEND_API_KEY` – beállítva (resend.com)
+- `NOTIFY_EMAIL` – beállítva: krgm.cleaning@gmail.com
 - `NOTIFY_FROM` – miután a domaint hitelesítetted a Resendben, például `KR&GM Website <quotes@krandgmcleaning.com>`
