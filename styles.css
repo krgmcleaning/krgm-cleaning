@@ -208,3 +208,19 @@ a.btn-ghost:hover{color:#fff}
   .promo-body{padding:24px 20px 20px}
 }
 [hidden]{display:none!important}
+
+/* policy pages */
+.legal .eyebrow{margin-bottom:8px}
+.legal-meta{color:var(--ink-soft);font-size:15px}
+.legal h3{font:600 18px/1.4 var(--sans);color:var(--ink);margin:1.2em 0 .4em}
+.legal ul{padding-left:1.2em;margin:0 0 1em}
+.legal li{margin:.35em 0}
+.legal p,.legal li{color:#2b4560}
+.legal-nav{display:flex;flex-wrap:wrap;gap:10px 20px;margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
+.policy-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0 8px}
+.policy-cards>div{background:linear-gradient(160deg,#eaf2fb,#f8efe6);border-radius:16px;padding:18px 18px 16px}
+.policy-cards b{display:block;font:700 26px/1.1 var(--sans);color:var(--navy);margin-bottom:6px}
+.policy-cards span{font-size:14.5px;color:var(--ink-soft)}
+@media (max-width:640px){.policy-cards{grid-template-columns:1fr}}
+.form-note{margin:0}
+.form-note a{color:inherit}
