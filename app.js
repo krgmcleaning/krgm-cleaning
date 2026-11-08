@@ -32,12 +32,12 @@
       { id: 'weekend', group: 'conditions', title: 'Weekend service', price: 30 },
       { id: 'recurring', group: 'conditions', title: 'Recurring customer', price: -20 },
     ],
-    // Discount codes (percent off the estimate). WELCOME20 is shown after newsletter signup.
+    // Discount codes (percent off the estimate). WELCOME15 is shown after newsletter signup.
     discountCodes: {
-      WELCOME20: { percent: 20, label: 'Subscriber welcome offer' },
+      WELCOME15: { percent: 15, label: 'Subscriber welcome offer' },
     },
   };
-  const WELCOME_CODE = 'WELCOME20';
+  const WELCOME_CODE = 'WELCOME15';
 
   const $ = (s, r = document) => r.querySelector(s);
   const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: PRICING.currency, minimumFractionDigits: 0, maximumFractionDigits: 2 });
@@ -174,7 +174,7 @@
       if (!emailOk(email)) { const s = statusFor(form); s.className = 'form-status err'; s.textContent = 'Please enter a valid email address.'; return; }
       const inPopup = Boolean(form.closest('#promo'));
       const ok = await send(form, { kind: 'newsletter', email, website: f.get('website') },
-        inPopup ? '' : `Thanks for subscribing! Your 20% code: ${WELCOME_CODE} — enter it in the estimate calculator.`);
+        inPopup ? '' : `Thanks for subscribing! Your 15% code: ${WELCOME_CODE} — enter it in the estimate calculator.`);
       if (!ok) return;
       store.set('krgm_subscribed', '1');
       if (window.krgmApplyCode) window.krgmApplyCode(WELCOME_CODE);

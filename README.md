@@ -27,5 +27,5 @@ Az `app.js` tetején a `PRICING` részben átírod a számot, commitolod, és a 
 - `NOTIFY_FROM` – miután a domaint hitelesítetted a Resendben, például `KR&GM Website <quotes@krandgmcleaning.com>`
 
 ## Kedvezménykódok
-Az `app.js` tetején, a `PRICING.discountCodes` részben vannak. Jelenleg: `WELCOME20` (20%, ezt kapja, aki a felugró ablakban vagy az oldal alján feliratkozik).
+Az `app.js` tetején, a `PRICING.discountCodes` részben vannak. Jelenleg: `WELCOME15` (15%, ezt kapja, aki a felugró ablakban vagy az oldal alján feliratkozik).
 Új kód felvétele: `MYCODE: { percent: 15, label: 'Leírás' },`
