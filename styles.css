@@ -59,10 +59,18 @@ a.btn-ghost:hover{color:#fff}
 }
 
 /* sections */
-.hero{background:var(--navy-deep)}
-.hero-img{width:100%;max-height:82vh;object-fit:cover}
-.intro{padding:88px 0 72px}
-.about{padding:40px 0 96px}
+/* Hero: whole image visible; on wide screens a blurred copy fills the sides */
+.hero{position:relative;overflow:hidden;background:#0b1f3f;display:flex;justify-content:center}
+.hero::before{content:"";position:absolute;inset:-60px;background:url(/images/illinois-hero.webp) center/cover no-repeat;filter:blur(30px) brightness(.62) saturate(1.25);transform:scale(1.08)}
+.hero-img{position:relative;width:100%;height:auto;max-width:calc((100vh - 72px) * 1.5);box-shadow:0 0 80px rgba(0,0,0,.35)}
+/* Intro picks up the hero's dusk-blue to sunset tones instead of plain white */
+.intro{position:relative;padding:72px 0 56px;background:
+  radial-gradient(1200px 380px at 15% 0%,rgba(255,196,140,.38),transparent 60%),
+  radial-gradient(900px 360px at 90% 10%,rgba(120,170,235,.35),transparent 60%),
+  linear-gradient(180deg,#e7f0fb 0%,#f6f1ea 100%)}
+.intro::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#f5a65b,#7fb0ec 55%,#003080)}
+.intro .lead{color:#30506f}
+.about{padding:48px 0 96px;background:linear-gradient(180deg,#f6f1ea 0%,#ffffff 140px)}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
 .split-media img{border-radius:var(--radius);box-shadow:0 24px 60px rgba(0,31,77,.16);width:100%;aspect-ratio:4/3;object-fit:cover}
 .split-text p{color:var(--ink-soft)}
@@ -116,7 +124,7 @@ a.btn-ghost:hover{color:#fff}
 .calc-error{color:var(--error);font-size:15px}
 
 /* contact */
-.contact{padding:96px 0}
+.contact{padding:96px 0;background:linear-gradient(180deg,#fff 0%,#eef4fb 100%)}
 .form{display:grid;gap:16px;margin-top:24px}
 .form label{display:grid;gap:6px;font-weight:500;font-size:15px}
 .form abbr{text-decoration:none;color:var(--error)}
@@ -126,7 +134,7 @@ a.btn-ghost:hover{color:#fff}
 .form-status{min-height:1.5em;font-weight:500;margin:0}
 .form-status.ok{color:var(--green)}
 .form-status.err{color:var(--error)}
-.newsletter{background:var(--paper);padding:72px 0}
+.newsletter{background:radial-gradient(900px 300px at 20% 0%,rgba(255,196,140,.35),transparent 65%),linear-gradient(120deg,#fbeee2 0%,#e6effa 100%);padding:72px 0}
 .newsletter h2{font-size:clamp(28px,3.6vw,40px)}
 .inline-form{display:flex;gap:10px;max-width:520px;margin:24px auto 12px}
 .inline-form input{border-radius:999px;padding:12px 20px}
