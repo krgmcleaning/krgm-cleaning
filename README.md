@@ -2,7 +2,7 @@
 
 A krandgmcleaning.com új oldala (Shopify helyett): statikus HTML/CSS/JS, egy Vercel függvény az űrlapokhoz, és Supabase adatbázis.
 
-## Felépítés
+## Felépítés (automatikus telepítés: a main ágra küldött minden módosítás magától kikerül)
 | Fájl | Mi ez |
 |---|---|
 | `index.html` | A főoldal (szolgáltatások, kalkulátor, kapcsolat, hírlevél) |
