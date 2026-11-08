@@ -21,6 +21,9 @@ function cleanEstimate(e) {
     bathrooms: num(e.bathrooms, 50),
     size: num(e.size, 1000000),
     extras: Array.isArray(e.extras) ? e.extras.slice(0, 20).map((x) => clip(x, 80)) : [],
+    subtotal: num(e.subtotal, 1000000),
+    discountCode: clip(e.discountCode, 30) || null,
+    discount: num(e.discount, 1000000),
     total: num(e.total, 1000000),
     currency: 'USD',
   };
@@ -92,6 +95,7 @@ export default async function handler(req, res) {
     const estHtml = est ? `<h3>Calculator estimate</h3><ul>
       <li>Cleaning: ${esc(est.service)}</li><li>Bedrooms: ${esc(est.bedrooms)}</li><li>Bathrooms: ${esc(est.bathrooms)}</li>
       <li>Home size: ${esc(est.size)} sq ft</li><li>Extras: ${esc(est.extras.join(', ') || 'None')}</li>
+      ${est.discountCode ? `<li>Discount code: <b>${esc(est.discountCode)}</b> (−$${esc(est.discount)}, before discount $${esc(est.subtotal)})</li>` : ''}
       <li><b>Estimate: $${esc(est.total)} USD</b></li></ul>` : '';
     await notify(
       `New ${est ? 'quote request' : 'message'} from ${row.name || email}`,

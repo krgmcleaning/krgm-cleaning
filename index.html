@@ -122,7 +122,9 @@
             <output class="total" id="calc-total">—</output>
             <p>USD / visit</p>
             <p class="calc-error" id="calc-error" hidden>Enter a valid home size and whole room/window counts.</p>
+            <p class="calc-discount" id="calc-discount" hidden></p>
           </div>
+          <label class="code-field"><span>Discount code</span><input id="calc-code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="30" placeholder="e.g. WELCOME20"></label>
           <button type="button" class="btn btn-block" id="calc-cta" disabled>Request this cleaning <span aria-hidden="true">→</span></button>
           <p class="small">This is an estimate. We will confirm the final price and availability before booking.</p>
           <p class="small">Your selections will be copied into the contact form below.</p>
@@ -155,8 +157,9 @@
 
   <section class="newsletter">
     <div class="wrap narrow center">
-      <h2>Clean Home, Peaceful Life – Subscribe &amp; Get 10% Off!</h2>
-      <form id="newsletter-form" class="inline-form" novalidate>
+      <h2>Clean Home, Peaceful Life – Subscribe &amp; Get 20% Off!</h2>
+      <p>Join our list and get <strong>20% off your first cleaning</strong>. Your code appears right after you subscribe.</p>
+      <form id="newsletter-form" class="inline-form" data-subscribe novalidate>
         <label class="sr" for="nl-email">Email</label>
         <input id="nl-email" name="email" type="email" placeholder="Your email" autocomplete="email" required maxlength="200">
         <label class="hp" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label>
@@ -166,6 +169,33 @@
     </div>
   </section>
 </main>
+
+<dialog id="promo" class="promo-dialog" aria-labelledby="promo-title">
+  <button type="button" class="promo-close" data-close aria-label="Close">×</button>
+  <div class="promo-media" aria-hidden="true"><img src="/images/crew-mopping.webp" alt="" width="1600" height="896" loading="lazy"></div>
+  <div class="promo-body">
+    <div data-step="ask">
+      <p class="eyebrow">Welcome offer</p>
+      <h2 id="promo-title">Get <span class="promo-big">20% off</span> your first cleaning</h2>
+      <p>Subscribe to our list and we’ll show your discount code instantly.</p>
+      <form class="promo-form" data-subscribe novalidate>
+        <label class="sr" for="promo-email">Email</label>
+        <input id="promo-email" name="email" type="email" placeholder="Your email" autocomplete="email" required maxlength="200">
+        <label class="hp" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label>
+        <button class="btn btn-block" type="submit">Get my 20% off</button>
+        <p class="form-status" role="status" aria-live="polite"></p>
+      </form>
+      <button type="button" class="promo-skip" data-close>No thanks</button>
+    </div>
+    <div data-step="done" hidden>
+      <p class="eyebrow">You’re in!</p>
+      <h2>Here’s your code</h2>
+      <p class="promo-code"><span data-code>WELCOME20</span><button type="button" class="btn btn-small" data-copy>Copy</button></p>
+      <p>Enter it in the estimate calculator or mention it when you book. Valid for your first cleaning.</p>
+      <a class="btn btn-block" href="#estimate" data-close>Use it in the calculator</a>
+    </div>
+  </div>
+</dialog>
 
 <footer class="site-footer">
   <div class="wrap footer-inner">

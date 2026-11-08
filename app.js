@@ -32,7 +32,12 @@
       { id: 'weekend', group: 'conditions', title: 'Weekend service', price: 30 },
       { id: 'recurring', group: 'conditions', title: 'Recurring customer', price: -20 },
     ],
+    // Discount codes (percent off the estimate). WELCOME20 is shown after newsletter signup.
+    discountCodes: {
+      WELCOME20: { percent: 20, label: 'Subscriber welcome offer' },
+    },
   };
+  const WELCOME_CODE = 'WELCOME20';
 
   const $ = (s, r = document) => r.querySelector(s);
   const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: PRICING.currency, minimumFractionDigits: 0, maximumFractionDigits: 2 });
@@ -86,12 +91,23 @@
       }
       const tier = PRICING.sizeTiers.find((t) => t.upTo === null || size <= t.upTo);
       if (!valid) { totalEl.textContent = '—'; errEl.hidden = false; cta.disabled = true; lastEstimate = null; return; }
-      const total = service.base + bedrooms * service.bedroom + bathrooms * service.bathroom + (tier ? tier.price : 0) + extrasTotal;
+      const subtotal = service.base + bedrooms * service.bedroom + bathrooms * service.bathroom + (tier ? tier.price : 0) + extrasTotal;
+      const codeRaw = $('#calc-code').value.trim().toUpperCase();
+      const code = PRICING.discountCodes[codeRaw];
+      const discount = code ? Math.round(subtotal * code.percent) / 100 : 0;
+      const total = Math.max(0, subtotal - discount);
+      const discEl = $('#calc-discount');
+      discEl.hidden = !codeRaw;
+      discEl.classList.toggle('bad', Boolean(codeRaw) && !code);
+      discEl.textContent = code ? `${codeRaw} applied: ${code.percent}% off (−${fmt.format(discount)}, was ${fmt.format(subtotal)})` : (codeRaw ? 'This code isn’t valid.' : '');
       totalEl.textContent = fmt.format(total); errEl.hidden = true; cta.disabled = false;
-      lastEstimate = { service: service.title, bedrooms, bathrooms, size, extras: picked, total, currency: PRICING.currency };
+      lastEstimate = { service: service.title, bedrooms, bathrooms, size, extras: picked, subtotal, discountCode: code ? codeRaw : null, discount, total, currency: PRICING.currency };
       lastSummary = ['Residential cleaning estimate', 'Cleaning: ' + service.title, 'Bedrooms: ' + bedrooms, 'Bathrooms: ' + bathrooms, 'Home size (sq ft): ' + size,
-        'Selected extras: ' + (picked.join(', ') || 'None'), 'Estimate: ' + fmt.format(total) + ' ' + PRICING.currency].join('\n');
+        'Selected extras: ' + (picked.join(', ') || 'None'),
+        ...(code ? ['Discount code: ' + codeRaw + ' (−' + code.percent + '%, −' + fmt.format(discount) + ')'] : []),
+        'Estimate: ' + fmt.format(total) + ' ' + PRICING.currency].join('\n');
     };
+    window.krgmApplyCode = (c) => { const i = $('#calc-code'); if (i && !i.value.trim()) { i.value = c; update(); } };
     calc.addEventListener('input', update); calc.addEventListener('change', update);
     calc.addEventListener('submit', (e) => e.preventDefault());
     let inserted = '';
@@ -107,19 +123,28 @@
     update();
   }
 
+  // ---- Small storage helpers (may be unavailable in private mode) ----
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch { /* ignore */ } },
+  };
+
   // ---- Forms -> /api/submit ----
-  const send = async (form, payload) => {
-    const status = form.parentElement.querySelector('.form-status') || form.querySelector('.form-status');
+  const statusFor = (form) => form.querySelector('.form-status') || form.parentElement.querySelector('.form-status');
+  const send = async (form, payload, okText) => {
+    const status = statusFor(form);
     const btn = form.querySelector('button[type=submit]');
     status.className = 'form-status'; status.textContent = 'Sending…'; btn.disabled = true;
     try {
       const r = await fetch('/api/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const data = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
-      status.classList.add('ok'); status.textContent = payload.kind === 'newsletter' ? 'Thanks for subscribing!' : 'Thank you! We received your message and will get back to you soon.';
+      status.classList.add('ok'); status.textContent = okText;
       form.reset(); delete form.dataset.estimate;
+      return true;
     } catch (err) {
       status.classList.add('err'); status.textContent = err.message;
+      return false;
     } finally { btn.disabled = false; }
   };
   const emailOk = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
@@ -131,14 +156,57 @@
     const status = cf.querySelector('.form-status');
     if (!emailOk(email)) { status.className = 'form-status err'; status.textContent = 'Please enter a valid email address.'; cf.email.focus(); return; }
     send(cf, { kind: 'contact', name: f.get('name'), email, phone: f.get('phone'), message: f.get('message'), website: f.get('website'),
-      estimate: cf.dataset.estimate ? JSON.parse(cf.dataset.estimate) : null });
+      estimate: cf.dataset.estimate ? JSON.parse(cf.dataset.estimate) : null },
+      'Thank you! We received your message and will get back to you soon.');
   });
 
-  const nf = $('#newsletter-form');
-  if (nf) nf.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const f = new FormData(nf); const email = String(f.get('email') || '').trim();
-    if (!emailOk(email)) { const s = nf.parentElement.querySelector('.form-status'); s.className = 'form-status err'; s.textContent = 'Please enter a valid email address.'; return; }
-    send(nf, { kind: 'newsletter', email, website: f.get('website') });
+  // ---- Subscribe forms (newsletter section + popup) ----
+  const promo = $('#promo');
+  const showCodeInPopup = () => {
+    if (!promo) return;
+    $('[data-step=ask]', promo).hidden = true;
+    $('[data-step=done]', promo).hidden = false;
+  };
+  document.querySelectorAll('form[data-subscribe]').forEach((form) => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = new FormData(form); const email = String(f.get('email') || '').trim();
+      if (!emailOk(email)) { const s = statusFor(form); s.className = 'form-status err'; s.textContent = 'Please enter a valid email address.'; return; }
+      const inPopup = Boolean(form.closest('#promo'));
+      const ok = await send(form, { kind: 'newsletter', email, website: f.get('website') },
+        inPopup ? '' : `Thanks for subscribing! Your 20% code: ${WELCOME_CODE} — enter it in the estimate calculator.`);
+      if (!ok) return;
+      store.set('krgm_subscribed', '1');
+      if (window.krgmApplyCode) window.krgmApplyCode(WELCOME_CODE);
+      if (inPopup) showCodeInPopup();
+    });
   });
+
+  // ---- Welcome popup: once per visitor, after 10s or 40% scroll; hidden for subscribers ----
+  if (promo && typeof promo.showModal === 'function') {
+    const WEEK = 7 * 24 * 3600 * 1000;
+    const dismissed = Number(store.get('krgm_promo_dismissed') || 0);
+    const eligible = !store.get('krgm_subscribed') && Date.now() - dismissed > WEEK;
+    let shown = false;
+    const open = () => {
+      if (shown || !eligible) return;
+      shown = true; window.removeEventListener('scroll', onScroll);
+      promo.showModal();
+    };
+    const onScroll = () => {
+      const h = document.documentElement;
+      if ((h.scrollTop + innerHeight) / h.scrollHeight > 0.4) open();
+    };
+    if (eligible) { setTimeout(open, 10000); window.addEventListener('scroll', onScroll, { passive: true }); }
+    const close = () => { if (promo.open) promo.close(); };
+    promo.addEventListener('close', () => { if (!store.get('krgm_subscribed')) store.set('krgm_promo_dismissed', String(Date.now())); });
+    promo.addEventListener('click', (e) => {
+      if (e.target === promo || e.target.closest('[data-close]')) close();
+    });
+    const copyBtn = $('[data-copy]', promo);
+    copyBtn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(WELCOME_CODE); copyBtn.textContent = 'Copied!'; }
+      catch { copyBtn.textContent = WELCOME_CODE; }
+    });
+  }
 })();
