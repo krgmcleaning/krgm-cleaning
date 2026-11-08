@@ -224,3 +224,4 @@ a.btn-ghost:hover{color:#fff}
 @media (max-width:640px){.policy-cards{grid-template-columns:1fr}}
 .form-note{margin:0}
 .form-note a{color:inherit}
+.code-field input::placeholder{text-transform:none;letter-spacing:0}
