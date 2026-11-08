@@ -1,0 +1,7 @@
+{
+  "name": "krgm-cleaning-site",
+  "private": true,
+  "type": "module",
+  "description": "K.R.&G.M. Cleaning LLC website — static site + Vercel function + Supabase",
+  "engines": { "node": ">=18" }
+}

@@ -1,0 +1,23 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/pages/contact", "destination": "/#contact", "permanent": true },
+    { "source": "/pages/:slug*", "destination": "/", "permanent": true },
+    { "source": "/policies/privacy-policy", "destination": "/privacy", "permanent": true },
+    { "source": "/policies/:slug*", "destination": "/privacy", "permanent": true },
+    { "source": "/collections/:slug*", "destination": "/", "permanent": true },
+    { "source": "/products/:slug*", "destination": "/", "permanent": true },
+    { "source": "/cart", "destination": "/", "permanent": true },
+    { "source": "/account/:slug*", "destination": "/", "permanent": true },
+    { "source": "/search", "destination": "/", "permanent": true }
+  ],
+  "headers": [
+    { "source": "/images/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] },
+    { "source": "/(.*)", "headers": [
+      { "key": "X-Content-Type-Options", "value": "nosniff" },
+      { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+      { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
+    ] }
+  ]
+}
